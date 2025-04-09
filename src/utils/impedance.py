@@ -3,12 +3,14 @@ import math
 
 def resistor_impedance(R: float) -> complex:
     """
-    Returns the impedance of a resistor, which is just R (real).
+    Returns the impedance of a resistor, which is just R (real). R should be provided in ohms (Ω).
     """
     return complex(R, 0)
 
 def inductor_impedance(L: float, f: float) -> complex:
     """
+    L should be provided in henries (H).
+    f (frequency) should be provided in hertz (Hz).
     Z_L = j * 2πfL
     """
     omega = 2 * math.pi * f
@@ -16,6 +18,8 @@ def inductor_impedance(L: float, f: float) -> complex:
 
 def capacitor_impedance(C: float, f: float) -> complex:
     """
+    C should be provided in farads (F).
+    f (frequency) should be provided in hertz (Hz).
     Z_C = 1 / (j * 2πfC) = -j / (2πfC)
     """
     omega = 2 * math.pi * f
