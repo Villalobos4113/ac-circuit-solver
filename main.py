@@ -71,7 +71,7 @@ def _calculate_branches_impedances(branches: list[dict]) -> list[complex]:
 # MAIN FUNCTIONS
 # ======================
 
-def define_branches_impedances() -> None:
+def define_branches_impedances() -> list[complex]:
     """
     Define the branches of the circuit.
     """
@@ -99,5 +99,33 @@ def define_branches_impedances() -> None:
     Z_branches = _calculate_branches_impedances(branches)
 
     # Print the impedance of each branch
+    print("\n\n" + "=" * 20 + "\nIMPEDANCE OF EACH BRANCH\n" + "=" * 20 + "\n") 
     for i, Z in enumerate(Z_branches):
         print(f"Branch {i + 1} impedance: {impedance_to_string(Z)}")
+    print("\n" + "=" * 20 + "\n\n")
+
+    return Z_branches
+
+def solve_circuit() -> None:
+    """
+    Solve the circuit using the defined branches and source voltages.
+    """
+    # Define equations based on the circuit topology
+    eq1 = (3 + 5j) * i1 - (3j) * i2 - V1
+    eq2 = -(3j) * i1 + (4 + 1j) * i2 - V2
+
+    # Solve the system of equations
+    solution = sympy.solve((eq1, eq2), (i1, i2), dict=True)
+
+    # 'solution' is a list of dictionaries, typically with one entry for linear systems
+    sol = solution[0]
+
+    # Extract i1, i2 solutions
+    i1_sol = sol[i1]
+    i2_sol = sol[i2]
+
+    # Print symbolic and numeric forms
+    print("i1 =", i1_sol, "-> numeric:", i1_sol.evalf())
+    print("i2 =", i2_sol, "-> numeric:", i2_sol.evalf())
+
+# ======================
