@@ -53,3 +53,8 @@ def polar_to_rect(magnitude: float, angle: float, deg: bool = True) -> complex:
     imag_part = magnitude * math.sin(angle_rad)
 
     return complex(real_part, imag_part)
+
+if __name__ == "__main__":
+
+    rect = polar_to_rect(3, 10)
+    print(rect)  # (10+5j)

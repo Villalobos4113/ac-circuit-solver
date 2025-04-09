@@ -23,3 +23,38 @@ def capacitor_impedance(C: float, f: float) -> complex:
     if C == 0:
         return complex(float('inf'), 0)  # "Infinite" impedance for no capacitor
     return 1 / complex(0, omega * C)
+
+def branch_impedance(resistors: list[float], inductors: list[float], capacitors: list[float], f: float) -> complex:
+    """
+    Calculate the total impedance of a branch with resistors, inductors, and capacitors in series.
+    """
+    Z_total = complex(0, 0)
+    
+    # Add resistors
+    for R in resistors:
+        Z_total += resistor_impedance(R)
+    
+    # Add inductors
+    for L in inductors:
+        Z_total += inductor_impedance(L, f)
+    
+    # Add capacitors
+    for C in capacitors:
+        Z_total += capacitor_impedance(C, f)
+    
+    return Z_total
+
+def impedance_to_string(Z: complex) -> str:
+    """
+    Converts a complex impedance to a string representation.
+    """
+    real_part = Z.real
+    imag_part = Z.imag
+
+    if imag_part >= 0:
+        return f"{real_part:.2f} + {imag_part:.2f}j"
+    else:
+        return f"{real_part:.2f} - {abs(imag_part):.2f}j"
+
+if __name__ == "__main__":
+    print(capacitor_impedance(1/48, 1/(4*math.pi)))  # (inf+0j)
