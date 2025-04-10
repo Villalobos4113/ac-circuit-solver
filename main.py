@@ -19,14 +19,17 @@ from src.utils.phasor import polar_to_rect, rect_to_polar
 
 #   Set frequency of the circuit, it can be in Hz or rad/s, but not both, set one to None
 #       Frequency of the circuit (in Hz)
-frequency = 60  # Hz
+frequency = 1 / math.pi  # Hz
 #       Frequency of the circuit (in rad/s)
-omega = 2 * math.pi * frequency  # rad/s
+omega = 2  # rad/s
 
 if frequency is None and omega is None:
     raise ValueError("Either frequency or omega must be set.")
 elif frequency is not None and omega is not None:
-    raise ValueError("Only one of frequency or omega should be set.")
+    omega_frequency = omega / (2 * math.pi)
+    if frequency != omega_frequency:
+        raise ValueError("Frequency and omega are inconsistent.")
+    circuit_frequency = frequency
 elif frequency is not None:
     circuit_frequency = frequency
 else:
@@ -38,8 +41,10 @@ else:
 #       If source voltage is in polar form, convert it to rectangular form
 #           Example: 10∠30° = polar_to_rect(10, 30) = (8.66 + 5j)
 #       Define as many sources as needed
-V1 = polar_to_rect(10, 30)  # V1 = 10∠30°
-V2 = 9.0 + 4.0j  # V2 = 9 + 4j
+V1 = polar_to_rect(12, 0)
+V2 = polar_to_rect(6, 0)
+
+i3 = polar_to_rect(3, 10)
 
 # 3) Define symbols
 i1, i2 = sympy.symbols('i1 i2', complex=True)
@@ -84,25 +89,40 @@ def define_branches_impedances() -> list[complex]:
     # Add more branches as needed
     branches = [
         {
-            'resistors': [3, 5],
-            'inductors': [3],
+            'resistors': [3],
+            'inductors': [1],
             'capacitors': [],
         },
         {
             'resistors': [],
             'inductors': [],
+            'capacitors': [3/2],
+        },
+        {
+            'resistors': [4],
+            'inductors': [],
             'capacitors': [],
-        }
+        },
+        {
+            'resistors': [],
+            'inductors': [],
+            'capacitors': [1/4],
+        },
+        {
+            'resistors': [1],
+            'inductors': [],
+            'capacitors': [1/4],
+        },
     ]
     
     # Calculate the total impedance of each branch
     Z_branches = _calculate_branches_impedances(branches)
 
     # Print the impedance of each branch
-    print("\n\n" + "=" * 20 + "\nIMPEDANCE OF EACH BRANCH\n" + "=" * 20 + "\n") 
+    print("\n\n" + "=" * 40 + "\nIMPEDANCE OF EACH BRANCH\n" + "=" * 40 + "\n") 
     for i, Z in enumerate(Z_branches):
-        print(f"Branch {i + 1} impedance: {impedance_to_string(Z)}")
-    print("\n" + "=" * 20 + "\n\n")
+        print(f"Branch {i} impedance: {impedance_to_string(Z)}")
+    print("\n" + "=" * 40 + "\n\n")
 
     return Z_branches
 
@@ -110,9 +130,13 @@ def solve_circuit() -> None:
     """
     Solve the circuit using the defined branches and source voltages.
     """
-    # Define equations based on the circuit topology
-    eq1 = (3 + 5j) * i1 - (3j) * i2 - V1
-    eq2 = -(3j) * i1 + (4 + 1j) * i2 - V2
+
+    # Define branches and their impedances
+    branch = define_branches_impedances()
+
+    # Define equations based on the circuit topology, you can use the branch list to define the equations
+    eq1 = (branch[0] + branch[1]) * i1 - (branch[1]) * i2 + V1 - V2
+    eq2 = - (branch[1]) * i1 + (branch[1] + branch[2] + branch[3]) * i2 - (branch[3]) * i3 + V2
 
     # Solve the system of equations
     solution = sympy.solve((eq1, eq2), (i1, i2), dict=True)
@@ -129,3 +153,7 @@ def solve_circuit() -> None:
     print("i2 =", i2_sol, "-> numeric:", i2_sol.evalf())
 
 # ======================
+
+if __name__ == "__main__":
+    # Before running the circuit solver, ensure that the branches are defined and the settings completed
+    solve_circuit()
