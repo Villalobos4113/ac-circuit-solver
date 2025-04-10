@@ -139,8 +139,8 @@ def solve_circuit() -> None:
     # Print circuit
 
     print("\n\n" + "=" * 40 + "\nCIRCUIT FREQUENCY\n" + "=" * 40 + "\n")
-    print(f"Frequency: {circuit_frequency} Hz")
-    print(f"Angular frequency: {2 * math.pi * circuit_frequency} rad/s")
+    print(f"Frequency: {circuit_frequency:.2f} Hz")
+    print(f"Angular frequency: {2 * math.pi * circuit_frequency:.2f} rad/s")
     print("\n")
 
     print("=" * 40 + "\nSOURCE VOLTAGE\n" + "=" * 40 + "\n")
